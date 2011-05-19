@@ -8,13 +8,13 @@ var Vector = new Class({
 	x: 0,
 	y: 0,
 	
-	initialize: function init(origPoint, endPoint) {
-		['x', 'y'].each(function(coord) { // super classy
-			this[coord] = endPoint[coord] - origPoint[coord];
+	initialize: function init(from, to) {
+		['x', 'y'].each(function(direction) { // super classy
+			this[direction] = to[direction] - from[direction];
 		}, this);
 	},
 	
-	cross: function cross(vect) {
+	by: function crossProduct(vect) {
 		return (this.x * vect.y) - (this.y * vect.x);
 	}
 });
