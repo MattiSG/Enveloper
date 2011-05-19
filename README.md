@@ -1,10 +1,14 @@
 A convex envelope calculator in JS
 ==================================
 
-Authors:
+Authors
+-------
+
 - Romaric Pighetti
 - Matti Schneider-Ghibaudo
 
-Credits:
+Credits
+-------
+
 - Nima Izadi for the viewer
 - Nicolas Dupont for the viewer
