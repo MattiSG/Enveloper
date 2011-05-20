@@ -19,9 +19,11 @@ var Divider = new Class({
 	
 	initialize: function init(points) {
 		//TODO: check points type
-		
+		this.setInput(points);
+	},
+	
+	setInput: function setInput(points) {
 		this.points = this.sortByAbscissa(points);
-		
 		this.blocks = this.initBlocks(this.points);
 	},
 	
