@@ -7,21 +7,21 @@ describe('PointsHelper', {
     before: function() {
    		origin = { x: 0, y: 0 };
         
-        rightPoints = [
+        points = [
+            origin,
             {'x' : 12, 'y' : 0},
             {'x' : 12, 'y' : 5},
             {'x' : 1, 'y' : 100},
             {'x' : 15, 'y' : -32},
-        ];
-        
-        leftPoints = [
             {'x' : -12, 'y' : 0},
             {'x' : -1, 'y' : 3},
             {'x' : -2, 'y' : -4},
             {'x' : -4, 'y' : 200},
+            {'x' : 0, 'y' : 15}
         ];
         
-        points = [].concat(rightPoints, leftPoints, origin);
+        rightPoints = [1,2,3,4,9];
+        leftPoints = [5,6,7,8,9];
         
         highest = {'x': 259, 'y':445};
         highestRelativeToOrigin = {'x': 29, 'y':119};
@@ -76,15 +76,15 @@ describe('PointsHelper', {
         
         value_of(PointsHelper.sameSideAs(
             new Vector(origin, {x: 0, y: 1}), 
-            leftPoints[0], 
-            points.concat({x:0, y:15}))
-        ).should_be(leftPoints.concat({x:0, y:15}));
+            points[5], 
+            points)
+        ).should_be(leftPoints);
         
         value_of(PointsHelper.sameSideAs(
             new Vector(origin, {x: 0, y: 1}),
-            rightPoints[0],
-            points.concat({x:0, y:15}))
-        ).should_be(rightPoints.concat({x:0, y:15}));
+            points[1],
+            points)
+        ).should_be(rightPoints);
     }
 });
 
