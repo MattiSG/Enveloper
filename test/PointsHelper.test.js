@@ -20,17 +20,17 @@ describe('PointsHelper', {
     },
     
     "Highest point calculation": function() {
-		value_of(PointsHelper.highestPointFromIn(origin, sortedPoints)).should_be(highestRelativeToOrigin);
+		value_of(PointsHelper.highestPointFromIn(origin, sortedPoints)).should_be(sortedPoints.indexOf(highestRelativeToOrigin));
 		
 		value_of(PointsHelper.highestPointFromIn(
 											{x: 0, y: 20},
 											[
 												{x: 1, y: 10},
 												{x: 1, y: 20},
-												{x: 1, y: 30},
+												{x: 1, y: 30}, // expected winner, index 2
 												{x: 1, y: 5}
 											])
-				).should_be({x: 1, y: 30});
+				).should_be(2);
 	},
 	
 	
@@ -41,19 +41,19 @@ describe('PointsHelper', {
 												{x: 1, y: 10},
 												{x: 1, y: 20},
 												{x: 1, y: 30},
-												{x: 1, y: 5}
+												{x: 1, y: 5} // expected winner, index 3
 											])
-				).should_be({x: 1, y: 5});
+				).should_be(3);
 				
 		value_of(PointsHelper.lowestPointFromIn(
 											{x: 0, y: 20},
 											[
-												{x: 1, y: 10},
+												{x: 1, y: 10}, // expected winner, index 0
 												{x: 1, y: 20},
 												{x: 1, y: 30},
 												{x: 100, y: 5}
 											])
-				).should_be({x: 1, y: 10});
+				).should_be(0);
 	}
 });
 

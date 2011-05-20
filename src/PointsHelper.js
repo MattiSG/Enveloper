@@ -2,6 +2,7 @@ var PointsHelper = {
 	/**
 	*@param	Point	from	the point from which the highest point is to be seen
 	*@param	Point[]	candidates	the *ordered* set of points in which to look for the highest point
+	*@returns	the index of the highest point in the candidates set
 	*/
 	highestPointFromIn: function getHighest(from, candidates) {
 		return this.genericPointFromIn(from,
@@ -14,6 +15,7 @@ var PointsHelper = {
 	/**
 	*@param	Point	from	the point from which the lowest point is to be seen
 	*@param	Point[]	candidates	the *ordered* set of points in which to look for the lowest point
+	*@returns	the index of the lowest point in the candidates set
 	*/
 	lowestPointFromIn: function getLowest(from, candidates) {
 		return this.genericPointFromIn(from,
@@ -33,17 +35,24 @@ var PointsHelper = {
 	*@private
 	*/	
 	genericPointFromIn: function getGenericSuperlative(from, candidates, shouldReplace) {
-		var result = candidates[0];
-		var resultVect = new Vector(from, result);
+		var result,
+			best,
+			bestVect;
 		
-		candidates.each(function(candidate) {
+		function setBestTo(index) {
+			best = candidates[index];
+			bestVect = new Vector(from, best);
+			result = index;		
+		}
+		
+		setBestTo(0);
+				
+		candidates.each(function(candidate, index) {
 			var vect = new Vector(from, candidate);
-			if (shouldReplace(resultVect, vect)) {
-				result = candidate;
-				resultVect = new Vector(from, result);
-			}
+			if (shouldReplace(bestVect, vect))
+				setBestTo(index);
 		});
 		
-		return result;	
+		return result;
 	}
 }
