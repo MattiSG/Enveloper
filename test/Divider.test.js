@@ -94,6 +94,17 @@ describe('Divider class', {
 		value_of(subject.getBlock(0)).should_be(sortedPoints.slice(0, 3));
 		value_of(subject.getBlock(1)).should_be([]);
 		value_of(subject.getBlock(2)).should_be([]);
+	},
+	
+	"Envelope calculation": function() {
+		subject = new Divider(points);
+		
+		value_of(subject.envelope()).should_be([
+													{'x': 105, 'y':65},
+													{'x': 525, 'y':257},
+													{'x': 259, 'y':445},
+													{'x': 29, 'y':119}
+												]);
 	}
 });
 
