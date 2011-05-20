@@ -3,13 +3,11 @@
 
 (function() {
 
-var points, sortedPoints, subject, origin, highest, highestRelativeToOrigin;
+var points, sortedPoints, subject, origin;
 
 describe('Divider class', {
 	before: function() {
 		subject = new Divider([]);
-				
-		origin = { x: 0, y: 0 };
 	
 		highest = {'x': 259, 'y':445};
 		highestRelativeToOrigin = {'x': 29, 'y':119};
@@ -46,43 +44,6 @@ describe('Divider class', {
 		value_of(subject.initBlocks(points)).should_be([0, 3, 6]);
 		points.unshift({});
 		value_of(subject.initBlocks(points)).should_be([0, 3, 6, 7]);
-	},
-	
-	"Highest point calculation": function() {
-		value_of(subject.highestPointFromIn(origin, sortedPoints)).should_be(highestRelativeToOrigin);
-		
-		value_of(subject.highestPointFromIn(
-											{x: 0, y: 20},
-											[
-												{x: 1, y: 10},
-												{x: 1, y: 20},
-												{x: 1, y: 30},
-												{x: 1, y: 5}
-											])
-				).should_be({x: 1, y: 30});
-	},
-	
-	
-	"Lowest point calculation": function() {
-		value_of(subject.lowestPointFromIn(
-											{x: 0, y: 20},
-											[
-												{x: 1, y: 10},
-												{x: 1, y: 20},
-												{x: 1, y: 30},
-												{x: 1, y: 5}
-											])
-				).should_be({x: 1, y: 5});
-				
-		value_of(subject.lowestPointFromIn(
-											{x: 0, y: 20},
-											[
-												{x: 1, y: 10},
-												{x: 1, y: 20},
-												{x: 1, y: 30},
-												{x: 100, y: 5}
-											])
-				).should_be({x: 1, y: 10});
 	}
 });
 
