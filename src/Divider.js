@@ -45,8 +45,30 @@ var Divider = new Class({
 		if (this.blocks.length == 1)
 			return this.envelope;
 		
-		for (var i = blocks[0]; i < blocks[1]; i++) {
-//			var lr = new Vector(this.points[this.blocks[1]], 
+		for (var l = blocks[0]; l < blocks[1]; l++) {
+			for (var r = blocks[1]; r < blocks[2]; r++) {
+			
+				var lr = new Vector(l, r);
+			}
 		}
+	},
+	
+	/**
+	*@param	Point	from	the point from which the highest point is to be seen
+	*@param	Point[]	candidates	the *ordered* set of points in which to look for the highest point
+	*/
+	highestPointFromIn: function getHighest(from, candidates) {
+		var result = candidates[0];
+		var resultVect = new Vector(from, result);
+		
+		candidates.each(function(candidate) {
+			var vect = new Vector(from, candidate);
+			if (resultVect.by(vect) > 0) {
+				result = candidate;
+				resultVect = new Vector(from, result);
+			}
+		});
+		
+		return result;
 	}
 });
