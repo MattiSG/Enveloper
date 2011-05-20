@@ -1,11 +1,27 @@
 (function() {
     
-    var origin, sortedPoints, highestRelativeToOrigin, highest;
+    var origin, sortedPoints, highestRelativeToOrigin, highest, rightPoints, leftPoints, points;
     
 describe('PointsHelper', {
     
     before: function() {
    		origin = { x: 0, y: 0 };
+        
+        rightPoints = [
+            {'x' : 12, 'y' : 0},
+            {'x' : 12, 'y' : 5},
+            {'x' : 1, 'y' : 100},
+            {'x' : 15, 'y' : -32},
+        ];
+        
+        leftPoints = [
+            {'x' : -12, 'y' : 0},
+            {'x' : -1, 'y' : 3},
+            {'x' : -2, 'y' : -4},
+            {'x' : -4, 'y' : 200},
+        ];
+        
+        points = [].concat(rightPoints, leftPoints, origin);
         
         highest = {'x': 259, 'y':445};
         highestRelativeToOrigin = {'x': 29, 'y':119};
@@ -54,7 +70,22 @@ describe('PointsHelper', {
 												{x: 100, y: 5}
 											])
 				).should_be(0);
-	}
+	},
+    
+    "Same side calculation" : function () {
+        
+        value_of(PointsHelper.sameSideAs(
+            new Vector(origin, {x: 0, y: 1}), 
+            leftPoints[0], 
+            points.concat({x:0, y:15}))
+        ).should_be(leftPoints.concat({x:0, y:15}));
+        
+        value_of(PointsHelper.sameSideAs(
+            new Vector(origin, {x: 0, y: 1}),
+            rightPoints[0],
+            points.concat({x:0, y:15}))
+        ).should_be(rightPoints.concat({x:0, y:15}));
+    }
 });
 
 })();
