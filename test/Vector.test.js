@@ -1,3 +1,6 @@
+/**Author: Matti Schneider-Ghibaudo
+*/
+
 (function() {
 
 var points, origin, unit;
