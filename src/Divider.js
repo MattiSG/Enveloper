@@ -23,7 +23,7 @@ var Divider = new Class({
 	},
 	
 	setInput: function setInput(points) {
-		this.points = this.sortByAbscissa(points);
+		this.points = this.sortByAbscissa(points.clone());
 		this.blocks = this.initBlocks(this.points);
 	},
 	
@@ -64,7 +64,7 @@ var Divider = new Class({
 	
 	/**Patches an envelope with its rightmost neighbour.
 	*
-	*@param	integer	index	the block-index of the
+	*@param	integer	index	the block-index of the envelope
 	*/
 	patchBlocksAt: function patchBlocksAt(index) {
 		if (index >= this.blocks.length - 1) // we can't patch together two envelopes if they are non-existent
@@ -72,10 +72,10 @@ var Divider = new Class({
 		
 		// these container objects will make variable management easier
 		var left = {
-			start: this.blocks[index],
-			points: this.getBlock(index),
-			bottom: null,
-			top : null
+			start: this.blocks[index], // start of the block in this.points; will be used for points removal once the envelopes are merged
+			points: this.getBlock(index), // the actual points of the leftside envelope
+			top : null, // will store the highest point of the envelope, from the point of view of the other envelope
+			bottom: null // ditto with lowest
 		};
 		
 		var right = {
