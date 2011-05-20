@@ -103,22 +103,27 @@ var Divider = new Class({
 		});
 		
 		// remove all points between the top and bottom boundaries in each envelope
-		left.toRemove = PointsHelper.sameSideAs(new Vector(left.bottom, left.top), right[right.top], left.points);
-		right.toRemove = PointsHelper.sameSideAs(new Vector(right.bottom, right.top), left[left.top], right.points);
+		var toRemove = [];
 		
+		left.toRemove = PointsHelper.sameSideAs(new Vector(left.points[left.bottom], left.points[left.top]), right.points[right.top], left.points);
+		right.toRemove = PointsHelper.sameSideAs(new Vector(right.points[right.bottom], right.points[right.top]), left.points[left.top], right.points);
+		
+
 		left.toRemove.each(function(index) {
-			this.points.splice(left.start + index, 1);
-		}, this);
+			toRemove.push(left.start + index);
+		});
 		
 		right.toRemove.each(function(index) {
-			this.points.splice(right.start + index, 1);
-		}, this);
+			toRemove.push(right.start + index);
+		});
 		
-		var removedCount = left.toRemove.length + right.toRemove.length;
+		toRemove.each(function(index) {
+			this.points.splice(index, 1);
+		}, this);
 		
 		// update blocks
 		for (var blockIndex = left.start; blockIndex < this.blocks.length - 1; blockIndex++)
-			this.blocks[blockIndex] -= removedCount; // point the points indices to the correct position, since this.points was trimmed
+			this.blocks[blockIndex] -= toRemove.length; // point the points indices to the correct position, since this.points was trimmed
 		
 		this.blocks.pop(); // we've removed the right-handside block
 	},
