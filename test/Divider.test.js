@@ -60,6 +60,29 @@ describe('Divider class', {
 												{x: 1, y: 5}
 											])
 				).should_be({x: 1, y: 30});
+	},
+	
+	
+	"Lowest point calculation": function() {
+		value_of(subject.lowestPointFromIn(
+											{x: 0, y: 20},
+											[
+												{x: 1, y: 10},
+												{x: 1, y: 20},
+												{x: 1, y: 30},
+												{x: 1, y: 5}
+											])
+				).should_be({x: 1, y: 5});
+				
+		value_of(subject.lowestPointFromIn(
+											{x: 0, y: 20},
+											[
+												{x: 1, y: 10},
+												{x: 1, y: 20},
+												{x: 1, y: 30},
+												{x: 100, y: 5}
+											])
+				).should_be({x: 1, y: 10});
 	}
 });
 
