@@ -3,12 +3,19 @@
 */
 
 var Divider = new Class({
+	/**Contains all points that are still to be worked on.
+	*That means, this array will be modified when computing envelopes, and you should never access it from the outside!
+	*
+	*@private
+	*/
 	points: [],
+	
 	/**Indices for the separations, to avoid memory hogging by duplicating points data.
 	*Each value is the index of a new block. The last value points to the last + 1 index of the points. That is, (blocks[blocks.length - 1] === points.length)
+	*
+	*@private
 	*/
 	blocks: [],
-	envelope: [],
 	
 	initialize: function init(points) {
 		//TODO: check points type
@@ -41,27 +48,79 @@ var Divider = new Class({
 		return result;
 	},
 	
+	envelope: function envelope() {
+		if (this.blocks.length > 2) // caching
+			this.computeEnvelope();
+
+		return this.points;
+	},
+	
 	computeEnvelope: function computeEnvelope() {
-		if (this.blocks.length == 2)
-			return this.envelope;
-			
-		// initiating leftside envelope's highest point at its leftmost point
-		var leftTop = this.points[this.blocks[1] - 1], // leftmost is the first at the left of the separation
-		// initiating rightside envelope's highest point at its rightmost point
-			rightTop = this.points[this.blocks[1]];
+		while (this.blocks.length > 2)
+			this.patchBlocksAt(0);
+	},
+	
+	/**Patches an envelope with its rightmost neighbour.
+	*
+	*@param	integer	index	the block-index of the
+	*/
+	patchBlocksAt: function patchBlocksAt(index) {
+		if (index >= this.blocks.length - 1) // we can't patch together two envelopes if they are non-existent
+			throw("Invalid block index!");
 		
-		var newLeftTop,
-			newRightTop;
+		// these container objects will make variable management easier
+		var left = {
+			start: this.blocks[index],
+			points: this.getBlock(index),
+			bottom: null,
+			top : null
+		};
 		
-		while (leftTop != newLeftTop // fixpoint algorithm
-			   || rightTop != newRightTop) {
-			   
-			leftTop = newLeftTop;
-			rightTop = newRightTop;
-			
-			newLeftTop = this.highestPointFromIn(leftTop, right);
-			newRightTop = this.highestPointFromIn(rightTop, left);
-		}
+		var right = {
+			start: this.blocks[index + 1],
+			points: this.getBlock(index + 1),
+			bottom: null,
+			top : null
+		};
+		
+		// initiate leftside envelope's highest and lowest points to its leftmost point
+		left.newtop = left.newbottom = left.points.length - 1;
+		
+		// initiate rightside envelope's highest and lowest points to its rightmost point
+		right.newtop = right.newbottom = 0;
+		
+		// compute highest and lowest points for each direction and each side
+		['top', 'bottom'].each(function(direction) { // same algorithm for both directions, but there is no gain in examining both at the same time
+			while (left[direction] != left['new' + direction]
+				   || right[direction] != right['new' + direction]) { // fixpoint algorithm
+				   
+				left[direction] = left['new' + direction];
+				right[direction] = right['new' + direction];
+				
+				left['new' + direction] = PointsHelper.highestPointFromIn(right.points[right[direction]], left.points);
+				right['new' + direction] = PointsHelper.highestPointFromIn(left.points[left[direction]], right.points);
+			}
+		});
+		
+		// remove all points between the top and bottom boundaries in each envelope
+		left.toRemove = PointsHelper.sameSideAs(new Vector(left.bottom, left.top), right[right.top], left.points);
+		right.toRemove = PointsHelper.sameSideAs(new Vector(right.bottom, right.top), left[left.top], right.points);
+		
+		left.toRemove.each(function(index) {
+			this.points.splice(left.start + index, 1);
+		}, this);
+		
+		right.toRemove.each(function(index) {
+			this.points.splice(right.start + index, 1);
+		}, this);
+		
+		var removedCount = left.toRemove.length + right.toRemove.length;
+		
+		// update blocks
+		for (var blockIndex = left.start; blockIndex < this.blocks.length - 1; blockIndex++)
+			this.blocks[blockIndex] -= removedCount; // point the points indices to the correct position, since this.points was trimmed
+		
+		this.blocks.pop(); // we've removed the right-handside block
 	},
 	
 	/**Returns a set of points as described by the blocks array.
