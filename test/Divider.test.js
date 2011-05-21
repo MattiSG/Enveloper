@@ -34,13 +34,11 @@ describe('Divider class', {
 	},
 	
 	"Blocks calculation": function() {
-		value_of(subject.initBlocks(points)).should_be([0, 3, 5]);
-		points.unshift({});
-		value_of(subject.initBlocks(points)).should_be([0, 3, 6]);
-		points.unshift({});
-		value_of(subject.initBlocks(points)).should_be([0, 3, 6, 7]);
-		points.unshift({});
-		value_of(subject.initBlocks(points)).should_be([0, 3, 6, 8]);
+		value_of(subject.initBlocks(points)).should_be([points.slice(0, 3), points.slice(3, 5)]);
+		points.shift();
+		value_of(subject.initBlocks(points)).should_be([points.slice(0, 3), points.slice(3, 4)]);
+		points.shift();
+		value_of(subject.initBlocks(points)).should_be([points.slice(0, 3)]);
 	},
 	
 	"Block getting": function() {
