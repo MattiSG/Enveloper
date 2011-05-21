@@ -10,11 +10,12 @@ var Randomer = new Class({
     innerPoint: {x:null, y:null},
     
     initialize: function init(points) {
-        this.points = points;
+        this.setInput(points)
     },
     
     setInput : function setInput(points) {
-        this.points = points;
+        this.points = points.clone();
+        this.tenvelope = [];
     },
     
     envelope : function envelope() {
