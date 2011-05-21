@@ -24,6 +24,9 @@ var Randomer = new Class({
     },
     
     computeEnvelope: function computeEnvelope(points) {
+        var texte = "";
+        this.tenvelope.each(function (point, index) { texte+=index+" : x = "+point.x+" y = "+point.y+" \n";});
+        //alert(texte);
         newPoint = points.getRandom();
         if (newPoint == null) {
             return this.tenvelope;
@@ -65,8 +68,14 @@ var Randomer = new Class({
             if (toRemove.length == 0) {
                 var newEnvelope = [];
                 var min = (lowerAttach<upperAttach)? lowerAttach : upperAttach;
-                var before = this.tenvelope.splice(0,min+1);
-                this.tenvelope = before.concat(newPoint, this.tenvelope);
+                var max = lowerAttach+upperAttach-min;
+                if (min == 0 && max == this.tenvelope.length-1) {
+                    this.tenvelope = [].concat(newPoint, this.tenvelope);
+                } 
+                else {
+                    var before = this.tenvelope.splice(0,min+1);
+                    this.tenvelope = before.concat(newPoint, this.tenvelope);
+                }
             } 
             /**
              * Else we just add the point in place of one of the points

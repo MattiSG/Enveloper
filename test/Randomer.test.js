@@ -67,6 +67,56 @@ describe('Randomer class', {
                                                 ]);
     },
     
+    "Iteration with multiple deletion" : function() {
+        var randomer = new Randomer(points);
+        randomer.tenvelope = [
+                        {'x': 4, 'y': 3},
+                        {'x': 5, 'y': 5},
+                        {'x': 10, 'y': 11},
+                        {'x': 11, 'y': 0}
+                    ];
+        randomer.innerPoint = { 'x' : 8, 'y' : 5};
+        randomer.iterate({'x': 0, 'y': 0});
+        value_of(randomer.tenvelope).should_be([
+                                                {'x': 0, 'y': 0},
+                                                {'x': 10, 'y': 11},
+                                                {'x': 11, 'y': 0}
+                                                ]);
+    },
+    
+    "Iteration again" : function() {
+        var randomer = new Randomer(points);
+        randomer.tenvelope = [
+                        {'x': 4, 'y': 3},
+                        {'x': 1, 'y': 10},
+                        {'x': 5, 'y': 5}
+                    ];
+        randomer.innerPoint = { 'x' : 10/3, 'y' : 18/3};
+        randomer.iterate({'x': 10, 'y': 11});
+        value_of(randomer.tenvelope).should_be([
+                                                {'x': 4, 'y': 3},
+                                                {'x': 1, 'y': 10},
+                                                {'x': 10, 'y': 11}
+                                                ]);
+    },
+    
+    "Iteration again" : function() {
+        var randomer = new Randomer(points);
+        randomer.tenvelope = [
+                        {'x': 0, 'y': 0},
+                        {'x': 4, 'y': 3},
+                        {'x': 5, 'y': 5}
+                    ];
+        randomer.innerPoint = { 'x' : 9/3, 'y' : 8/3};
+        randomer.iterate({'x': 1, 'y': 10});
+        value_of(randomer.tenvelope).should_be([
+                                                {'x': 1, 'y': 10},
+                                                {'x': 0, 'y': 0},
+                                                {'x': 4, 'y': 3},
+                                                {'x': 5, 'y': 5}
+                                                ]);
+    },
+    
     "Envelope calculation" : function() {
         var randomer = new Randomer(points);
         randomer.envelope();
