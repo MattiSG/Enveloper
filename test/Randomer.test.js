@@ -19,14 +19,14 @@ describe('Randomer class', {
     
     "One iteration in the computation" : function() {
         var randomer = new Randomer(points);
-        randomer.envelope = [
+        randomer.tenvelope = [
                         {'x': 0, 'y': 0},
                         {'x': 4, 'y': 3},
                         {'x': 11, 'y': 0}
                     ];
         randomer.innerPoint = { 'x' : 5, 'y' : 1};
         randomer.iterate({'x': 5, 'y': 5});
-        value_of(randomer.envelope).should_be([
+        value_of(randomer.tenvelope).should_be([
                         {'x': 0, 'y': 0},
                         {'x': 5, 'y': 5},
                         {'x': 11, 'y': 0}
@@ -35,14 +35,14 @@ describe('Randomer class', {
     
     "Other iteration in the computation" : function() {
         var randomer = new Randomer(points);
-        randomer.envelope = [
+        randomer.tenvelope = [
                         {'x': 0, 'y': 0},
                         {'x': 11, 'y': 0},
                         {'x': 5, 'y': 5}
                     ];
         randomer.innerPoint = { 'x' : 16/3, 'y' : 5/3};
         randomer.iterate({'x': 4, 'y': 3});
-        value_of(randomer.envelope).should_be([
+        value_of(randomer.tenvelope).should_be([
                                                 {'x': 0, 'y': 0},
                                                 {'x': 11, 'y': 0},
                                                 {'x': 5, 'y': 5}
@@ -51,7 +51,7 @@ describe('Randomer class', {
     
     "Another iteration in the computation" : function() {
         var randomer = new Randomer(points);
-        randomer.envelope = [
+        randomer.tenvelope = [
                         {'x': 4, 'y': 3},
                         {'x': 11, 'y': 0},
                         {'x': 10, 'y': 11},
@@ -59,7 +59,7 @@ describe('Randomer class', {
                     ];
         randomer.innerPoint = { 'x' : 5, 'y' : 5};
         randomer.iterate({'x': 0, 'y': 0});
-        value_of(randomer.envelope).should_be([
+        value_of(randomer.tenvelope).should_be([
                                                 {'x': 0, 'y': 0},
                                                 {'x': 11, 'y': 0},
                                                 {'x': 10, 'y': 11},
@@ -69,12 +69,12 @@ describe('Randomer class', {
     
     "Envelope calculation" : function() {
         var randomer = new Randomer(points);
-        randomer.computeEnvelope(points);
-        value_of(randomer.envelope).should_have(4, "items");
-        value_of(randomer.envelope).should_include({'x': 0, 'y': 0});
-        value_of(randomer.envelope).should_include({'x': 1, 'y': 10});
-        value_of(randomer.envelope).should_include({'x': 10, 'y': 11});
-        value_of(randomer.envelope).should_include({'x': 11, 'y': 0});
+        randomer.envelope();
+        value_of(randomer.tenvelope).should_have(4, "items");
+        value_of(randomer.tenvelope).should_include({'x': 0, 'y': 0});
+        value_of(randomer.tenvelope).should_include({'x': 1, 'y': 10});
+        value_of(randomer.tenvelope).should_include({'x': 10, 'y': 11});
+        value_of(randomer.tenvelope).should_include({'x': 11, 'y': 0});
     }
     
 });

@@ -6,28 +6,38 @@
 
 var Randomer = new Class({
     points:[],
-    envelope:[],
+    tenvelope:[],
     innerPoint: {x:null, y:null},
     
     initialize: function init(points) {
         this.points = points;
     },
     
+    setInput : function setInput(points) {
+        this.points = points;
+    },
+    
+    envelope : function envelope() {
+        if (this.tenvelope.length == 0)
+            this.computeEnvelope(this.points);
+        return this.tenvelope;
+    },
+    
     computeEnvelope: function computeEnvelope(points) {
         newPoint = points.getRandom();
         if (newPoint == null) {
-            return this.envelope;
+            return this.tenvelope;
         }
-        if (this.envelope.length < 3) {
-            this.envelope.push(newPoint);
+        if (this.tenvelope.length < 3) {
+            this.tenvelope.push(newPoint);
         } else {
             /**
              * If no point inside the envelope has been created yet, we create one.
              */
             if (this.innerPoint.x == null) {
                 //TODO: à reprendre en plus joli.
-                this.innerPoint.x = (this.envelope[0].x+this.envelope[1].x+this.envelope[2].x)/3;
-                this.innerPoint.y = (this.envelope[0].y+this.envelope[1].y+this.envelope[2].y)/3;
+                this.innerPoint.x = (this.tenvelope[0].x+this.tenvelope[1].x+this.tenvelope[2].x)/3;
+                this.innerPoint.y = (this.tenvelope[0].y+this.tenvelope[1].y+this.tenvelope[2].y)/3;
             }
             
             this.iterate(newPoint);
@@ -43,9 +53,9 @@ var Randomer = new Class({
          */
         var segmentCrossed = this.crossEnvelope(newPoint);
         if (segmentCrossed.length != 0) {
-            var lowerAttach = PointsHelper.lowestPointFromIn(newPoint, this.envelope);
-            var upperAttach = PointsHelper.highestPointFromIn(newPoint, this.envelope);
-            var toRemove = PointsHelper.sameSideAs(new Vector(this.envelope[lowerAttach], this.envelope[upperAttach]), newPoint, this.envelope);
+            var lowerAttach = PointsHelper.lowestPointFromIn(newPoint, this.tenvelope);
+            var upperAttach = PointsHelper.highestPointFromIn(newPoint, this.tenvelope);
+            var toRemove = PointsHelper.sameSideAs(new Vector(this.tenvelope[lowerAttach], this.tenvelope[upperAttach]), newPoint, this.tenvelope);
             
             /**
              * If there's nothing to remove, we just add the new point 
@@ -55,8 +65,8 @@ var Randomer = new Class({
             if (toRemove.length == 0) {
                 var newEnvelope = [];
                 var min = (lowerAttach<upperAttach)? lowerAttach : upperAttach;
-                var before = this.envelope.splice(0,min+1);
-                this.envelope = before.concat(newPoint, this.envelope);
+                var before = this.tenvelope.splice(0,min+1);
+                this.tenvelope = before.concat(newPoint, this.tenvelope);
             } 
             /**
              * Else we just add the point in place of one of the points
@@ -64,11 +74,11 @@ var Randomer = new Class({
              * remove from the envelope.
              */
             else {
-                this.envelope[toRemove[0]] = newPoint;
+                this.tenvelope[toRemove[0]] = newPoint;
                 toRemove.splice(0,1);
                 toRemove.each(
                     function(pointIndex) {
-                        this.envelope.splice(pointIndex,1);
+                        this.tenvelope.splice(pointIndex,1);
                     },this);
             }
             //this.envelope.push(newPoint);
@@ -82,16 +92,16 @@ var Randomer = new Class({
      */
     crossEnvelope: function crossEnvelope(point) {
         var innerTopoint = new Vector(this.innerPoint, point);
-        for (var i = 0; i<this.envelope.length; i++) {
-            var innerToa = new Vector(this.innerPoint, this.envelope[i]);
-            var innerTob = new Vector(this.innerPoint, this.envelope[(i+1)%this.envelope.length]);
-            var aTob = new Vector(this.envelope[i], this.envelope[(i+1)%this.envelope.length]);
-            var aToinner = new Vector(this.envelope[i], this.innerPoint);
-            var aTopoint = new Vector(this.envelope[i], point);
+        for (var i = 0; i<this.tenvelope.length; i++) {
+            var innerToa = new Vector(this.innerPoint, this.tenvelope[i]);
+            var innerTob = new Vector(this.innerPoint, this.tenvelope[(i+1)%this.tenvelope.length]);
+            var aTob = new Vector(this.tenvelope[i], this.tenvelope[(i+1)%this.tenvelope.length]);
+            var aToinner = new Vector(this.tenvelope[i], this.innerPoint);
+            var aTopoint = new Vector(this.tenvelope[i], point);
             
             if (innerTopoint.by(innerToa) * innerTopoint.by(innerTob) < 0 &&
                 aTob.by(aToinner) * aTob.by(aTopoint) < 0) {
-                    return [this.envelope[i], this.envelope[(i+1)%this.envelope.length]];
+                    return [this.tenvelope[i], this.tenvelope[(i+1)%this.tenvelope.length]];
             }
         }
         return [];
