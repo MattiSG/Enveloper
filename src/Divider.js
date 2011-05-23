@@ -73,11 +73,9 @@ var Divider = new Class({
 	},
 	
 	patchBlocksAt: function patchBlocksAt(index) {
-		var result = [];
-		
-		var leftBlock = this.getBlock(index);
-		var rightBlock = this.getBlock(index + 1);
-		
+		var leftBlock = this.sortByAbscissa(this.getBlock(index));
+		var rightBlock = this.sortByAbscissa(this.getBlock(index + 1));
+				
 		var bounds = {
 			left: {
 				top: null,
@@ -111,10 +109,10 @@ var Divider = new Class({
 			bounds.right.tmp = PointsHelper.highestPointFromIn(leftBlock[bounds.left.bottom], rightBlock);
 		}
 		
-		result.push(leftBlock[bounds.left.top],
-					leftBlock[bounds.left.bottom],
-					rightBlock[bounds.right.top],
-					rightBlock[bounds.right.bottom]);
+		var result = [];
+		
+		result.push(rightBlock[bounds.right.bottom],
+					leftBlock[bounds.left.bottom]);
 		
 		result.combine(PointsHelper.oppositeSideTo(
 												new Vector(leftBlock[bounds.left.top], leftBlock[bounds.left.bottom]),
@@ -122,16 +120,18 @@ var Divider = new Class({
 												leftBlock
 											   ));
 											   
+		result.push(leftBlock[bounds.left.top],
+					rightBlock[bounds.right.top]);
+											   
 		result.combine(PointsHelper.oppositeSideTo(
 												new Vector(rightBlock[bounds.right.top], rightBlock[bounds.right.bottom]),
 												leftBlock[0], // ordered by ascissa
 												rightBlock
 											   ));
-											   
-		this.blocks[index] = this.sortByAbscissa(result);
+		
+		this.blocks[index] = result;
 		this.blocks.splice(index + 1, 1);
 	},
-	
 	
 	
 	
