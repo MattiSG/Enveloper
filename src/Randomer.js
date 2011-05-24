@@ -16,6 +16,7 @@ var Randomer = new Class({
     setInput : function setInput(points) {
         this.points = points.clone();
         this.tenvelope = [];
+		this.innerPoint = {x:null, y:null};
     },
     
     envelope : function envelope() {
