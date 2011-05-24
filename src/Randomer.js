@@ -8,6 +8,7 @@ var Randomer = new Class({
     points:[],
     tenvelope:[],
     innerPoint: {x:null, y:null},
+    texte: "",
     
     initialize: function init(points) {
         this.setInput(points)
@@ -25,11 +26,11 @@ var Randomer = new Class({
     },
     
     computeEnvelope: function computeEnvelope(points) {
-        var texte = "";
-        this.tenvelope.each(function (point, index) { texte+=index+" : x = "+point.x+" y = "+point.y+" \n";});
-        //alert(texte);
+        this.tenvelope.each(function (point, index) { this.texte+=index+" : x = "+point.x+" y = "+point.y+" \n";},this);
+        this.texte+="<br/>";
         newPoint = points.getRandom();
         if (newPoint == null) {
+            //alert(this.texte);
             return this.tenvelope;
         }
         if (this.tenvelope.length < 3) {
@@ -66,10 +67,10 @@ var Randomer = new Class({
              * between the upper and the lower attach points int the 
              * envelope.
              */
+            var min = (lowerAttach<upperAttach)? lowerAttach : upperAttach;
+            var max = lowerAttach+upperAttach-min;
             if (toRemove.length == 0) {
                 var newEnvelope = [];
-                var min = (lowerAttach<upperAttach)? lowerAttach : upperAttach;
-                var max = lowerAttach+upperAttach-min;
                 if (min == 0 && max == this.tenvelope.length-1) {
                     this.tenvelope = [].concat(newPoint, this.tenvelope);
                 } 
@@ -84,12 +85,49 @@ var Randomer = new Class({
              * remove from the envelope.
              */
             else {
+                //*
+                if (min < toRemove[0] && max > toRemove[0]) {
+                    min++;
+                    this.tenvelope[min] = newPoint;
+                    min++;
+                    max--;
+                    if (min <= max)
+                        this.tenvelope.splice(min, max-min+1);
+                } else {
+                    if (min == 0) {
+                        this.tenvelope[this.tenvelope.length-1] = newPoint;
+                        min = max;
+                        max = this.tenvelope.length-1;
+                    } else {
+                        min--;
+                        this.tenvelope[min] = newPoint;
+                        //if (min == 0) {
+                        //    min = this.tenvelope.length-1;
+                        //} else {
+                        //    min--;
+                        //}
+                        
+                        //if (max == this.tenvelope.length-1) {
+                        //    max = 0;
+                        //} else {
+                        //    max++;
+                        //}
+                    }
+                    if (max >= min && max != min)
+                        this.tenvelope = this.tenvelope.splice(min, max-min+1);
+                    else if (max != min)   
+                        this.tenvelope.splice(min, 1);
+                }
+            
+                //*/
+                /*
                 this.tenvelope[toRemove[0]] = newPoint;
                 toRemove.splice(0,1);
                 toRemove.each(
                     function(pointIndex) {
                         this.tenvelope.splice(pointIndex,1);
                     },this);
+                //*/
             }
             //this.envelope.push(newPoint);
         }
@@ -109,8 +147,8 @@ var Randomer = new Class({
             var aToinner = new Vector(this.tenvelope[i], this.innerPoint);
             var aTopoint = new Vector(this.tenvelope[i], point);
             
-            if (innerTopoint.by(innerToa) * innerTopoint.by(innerTob) < 0 &&
-                aTob.by(aToinner) * aTob.by(aTopoint) < 0) {
+            if (innerTopoint.by(innerToa) * innerTopoint.by(innerTob) <= 0 &&
+                aTob.by(aToinner) * aTob.by(aTopoint) <= 0) {
                     return [this.tenvelope[i], this.tenvelope[(i+1)%this.tenvelope.length]];
             }
         }
