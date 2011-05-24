@@ -56,6 +56,7 @@ var PointsHelper = {
 		return result;
 	},
     
+
     sameSideAs: function sameSideAs(refVect, refPoint, points) {
         var refSign = refVect.by(new Vector(refVect.origin, refPoint));
         var result = [];
@@ -65,6 +66,16 @@ var PointsHelper = {
                     ((refVect.origin.x + refVect.x) == point.x && (refVect.origin.y + refVect.y) == point.y)))
                 result.push(index);
             }
+        });
+        return result;
+    },
+    
+    oppositeSideTo: function oppositeSideTo(refVect, refPoint, points) {
+        var refSign = refVect.by(new Vector(refVect.origin, refPoint));
+        var result = [];
+        points.each (function (point, index) {
+            if(refVect.by(new Vector(refVect.origin, point))*refSign < 0)
+                result.push(point);
         });
         return result;
     },

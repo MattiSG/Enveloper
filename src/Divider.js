@@ -15,7 +15,7 @@ var Divider = new Class({
 	*
 	*@private
 	*/
-	blocks: [],
+	blocks: [], //TODO: "blocks" -> "envelopes"
 	
 	initialize: function init(points) {
 		//TODO: check points type
@@ -43,30 +43,114 @@ var Divider = new Class({
 		var result = [];
 		
 		for (var i = 0; i < points.length; i += 3)
-			result.push(i);
-			
-		result.push(points.length);
+			result.push(points.slice(i, i + 3));
 			
 		return result;
 	},
 	
+	/**Returns a set of points as described by the blocks array.
+	*
+	*@param	integer	index	the index of the block you're interested in
+	*@returns	Point[]	the index-th block of points, or an empty array if the block does not exist
+	*/
+	getBlock: function getBlock(index) {
+		if (index >= this.blocks.length || index < 0)
+			return [];
+
+		return this.blocks[index];
+	},
+	
 	envelope: function envelope() {
-		if (this.blocks.length > 2) // caching
+		if (this.blocks.length > 1) // caching
 			this.computeEnvelope();
 
-		return this.points;
+		return this.getBlock(0);
 	},
 	
 	computeEnvelope: function computeEnvelope() {
-		while (this.blocks.length > 2)
+		while (this.blocks.length > 1)
 			this.patchBlocksAt(0);
 	},
+	
+	patchBlocksAt: function patchBlocksAt(index) {
+		var leftBlock = this.sortByAbscissa(this.getBlock(index));
+		var rightBlock = this.sortByAbscissa(this.getBlock(index + 1));
+				
+		var bounds = {
+			left: {
+				top: null,
+				bottom: {},
+				tmp : leftBlock.length - 1 // working on indices
+			},
+			right: {
+				top: null,
+				bottom: {},
+				tmp: 0 // working on indices
+			}
+		};
+		
+		while (bounds.left.top != bounds.left.tmp
+			   || bounds.right.top != bounds.right.tmp) {
+			
+			bounds.left.top = bounds.left.tmp;
+			bounds.right.top = bounds.right.tmp;
+			
+			bounds.left.tmp = PointsHelper.highestPointFromIn(rightBlock[bounds.right.top], leftBlock);
+			bounds.right.tmp = PointsHelper.lowestPointFromIn(leftBlock[bounds.left.top], rightBlock);
+		}
+		
+		while (bounds.left.bottom != bounds.left.tmp
+			   || bounds.right.bottom != bounds.right.tmp) {
+			
+			bounds.left.bottom = bounds.left.tmp;
+			bounds.right.bottom = bounds.right.tmp;
+			
+			bounds.left.tmp = PointsHelper.lowestPointFromIn(rightBlock[bounds.right.bottom], leftBlock);
+			bounds.right.tmp = PointsHelper.highestPointFromIn(leftBlock[bounds.left.bottom], rightBlock);
+		}
+		
+		var result = [];
+		
+		result.push(rightBlock[bounds.right.bottom],
+					leftBlock[bounds.left.bottom]);
+		
+		result.combine(PointsHelper.oppositeSideTo(
+												new Vector(leftBlock[bounds.left.top], leftBlock[bounds.left.bottom]),
+												rightBlock[0], // ordered by ascissa
+												leftBlock
+											   ));
+											   
+		result.push(leftBlock[bounds.left.top],
+					rightBlock[bounds.right.top]);
+											   
+		result.combine(PointsHelper.oppositeSideTo(
+												new Vector(rightBlock[bounds.right.top], rightBlock[bounds.right.bottom]),
+												leftBlock[0], // ordered by ascissa
+												rightBlock
+											   ));
+		
+		this.blocks[index] = result;
+		this.blocks.splice(index + 1, 1);
+	},
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**Patches an envelope with its rightmost neighbour.
 	*
 	*@param	integer	index	the block-index of the envelope
 	*/
-	patchBlocksAt: function patchBlocksAt(index) {
+	optimizedPatchBlocksAt: function patchBlocksAt__Opt(index) {
 		if (index >= this.blocks.length - 1) // we can't patch together two envelopes if they are non-existent
 			throw("Invalid block index!");
 		
@@ -86,24 +170,50 @@ var Divider = new Class({
 		};
 		
 		// initiate leftside envelope's highest and lowest points to its leftmost point
-		left.newtop = left.newbottom = left.points.length - 1;
+		left.newtop = left.newbottom = left.points.length - 1; // no use of left.start because here, we're relative to the envelope itself
 		
 		// initiate rightside envelope's highest and lowest points to its rightmost point
 		right.newtop = right.newbottom = 0;
 		
 		// compute highest and lowest points for each direction and each side
-		['top', 'bottom'].each(function(direction) { // same algorithm for both directions, but there is no gain in examining both at the same time
+/*		Object.each({ // same algorithm for both directions, but there is no gain in examining both at the same time
+			top: PointsHelper.highestPointFromIn.bind(PointsHelper),
+			bottom: PointsHelper.lowestPointFromIn.bind(PointsHelper)
+		}, function(pointFinder, direction) {
 			while (left[direction] != left['new' + direction]
 				   || right[direction] != right['new' + direction]) { // fixpoint algorithm
 				   
 				left[direction] = left['new' + direction];
 				right[direction] = right['new' + direction];
 				
-				left['new' + direction] = PointsHelper.highestPointFromIn(right.points[right[direction]], left.points);
-				right['new' + direction] = PointsHelper.highestPointFromIn(left.points[left[direction]], right.points);
+				left['new' + direction] = pointFinder(right.points[right[direction]], left.points);
+				right['new' + direction] = pointFinder(left.points[left[direction]], right.points);
 			}
 		});
+
+*/
+		var direction = 'top';
+		while (left[direction] != left['new' + direction]
+			   || right[direction] != right['new' + direction]) { // fixpoint algorithm
+			   
+			left[direction] = left['new' + direction];
+			right[direction] = right['new' + direction];
+			
+			left['new' + direction] = PointsHelper.highestPointFromIn(right.points[right[direction]], left.points);
+			right['new' + direction] = PointsHelper.lowestPointFromIn(left.points[left[direction]], right.points);
+		}
 		
+		direction = 'bottom';
+		while (left[direction] != left['new' + direction]
+			   || right[direction] != right['new' + direction]) { // fixpoint algorithm
+			   
+			left[direction] = left['new' + direction];
+			right[direction] = right['new' + direction];
+			
+			left['new' + direction] = PointsHelper.lowestPointFromIn(right.points[right[direction]], left.points);
+			right['new' + direction] = PointsHelper.highestPointFromIn(left.points[left[direction]], right.points);
+		}
+
 		// remove all points between the top and bottom boundaries in each envelope
 		var toRemove = [];
 		
@@ -125,20 +235,8 @@ var Divider = new Class({
 		
 		// update blocks
 		for (var blockIndex = left.start; blockIndex < this.blocks.length - 1; blockIndex++)
-			this.blocks[blockIndex] -= toRemove.length; // point the points indices to the correct position, since this.points was trimmed
+			this.blocks[blockIndex] -= (toRemove.length - 1); // point the points indices to the correct position, since this.points was trimmed
 		
 		this.blocks.pop(); // we've removed the right-handside block
-	},
-	
-	/**Returns a set of points as described by the blocks array.
-	*
-	*@param	integer	index	the index of the block you're interested in
-	*@returns	Point[]	the index-th block of points, or an empty array if the block does not exist
-	*/
-	getBlock: function getBlock(index) {
-		if (index >= this.blocks.length - 1)
-			return [];
-		
-		return this.points.slice(this.blocks[index], this.blocks[index + 1]);
 	}
 });
