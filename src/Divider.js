@@ -1,5 +1,5 @@
-/**Defines all useful functions for working with points, vectors and such.
-*Authors: Romaric Pighetti, Matti Schneider-Ghibaudo
+/**A divide & conquer algorithm to compute the convex envelope of a set of points
+*Authors: Matti Schneider-Ghibaudo
 */
 
 var Divider = new Class({

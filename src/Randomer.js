@@ -1,7 +1,6 @@
 /**
- * Compute the convex envelope of a set of points
- * using a random algorithm.
- * authors: Romaric Pighetti, Matti Schneider-Ghibaudo
+ * Computes the convex envelope of a set of points using a random algorithm.
+ * authors: Romaric Pighetti
  */
 
 var Randomer = new Class({
@@ -33,22 +32,20 @@ var Randomer = new Class({
             return this.tenvelope;
         }
         
-        /**
+        /*
          * For the first three points, there are no special treatments.
          * We just pick them randomly.
          */
         if (this.tenvelope.length < 3) {
             this.tenvelope.push(newPoint);
         } else {
-            /**
+            /*
              * If no point inside the envelope has been created yet, we create one.
              * I chose the barycenter of the three first points.
              */
-            if (this.innerPoint.x == null) {
-                this.innerPoint.x = (this.tenvelope[0].x+this.tenvelope[1].x+this.tenvelope[2].x)/3;
-                this.innerPoint.y = (this.tenvelope[0].y+this.tenvelope[1].y+this.tenvelope[2].y)/3;
-            }
-            
+             if (this.innerPoint.x == null)
+	             this.innerPoint = PointsHelper.barycenter(this.tenvelope);
+	                         
             this.iterate(newPoint);
         }
         this.computeEnvelope(points.erase(newPoint));
@@ -58,11 +55,11 @@ var Randomer = new Class({
      * Compute the envelope after the integration of newPoint.
      */
     iterate: function iterate(newPoint) {
-        /**
+        /*
          * Check wether the newPoint is inside the envelope or not, if it is not
          * we have some computation to do.
          */
-        var segmentCrossed = this.crossEnvelope(newPoint);
+        var segmentCrossed = PointsHelper.crossEnvelope(this.tenvelope, this.innerPoint, newPoint);
         if (segmentCrossed.length != 0) {
             var lowerAttach = PointsHelper.lowestPointFromIn(newPoint, this.tenvelope);
             var upperAttach = PointsHelper.highestPointFromIn(newPoint, this.tenvelope);
@@ -75,7 +72,7 @@ var Randomer = new Class({
             var min = (lowerAttach<upperAttach)? lowerAttach : upperAttach;
             var max = lowerAttach+upperAttach-min;
             
-            /**
+            /*
              * If there's nothing to remove, we just add the new point 
              * between the upper and the lower attach points in the 
              * envelope.
@@ -91,7 +88,7 @@ var Randomer = new Class({
                 }
             } 
             
-            /**
+            /*
              * Else we just add the point in place of one of the points
              * we have to remove and we remove all the other points to
              * remove from the envelope.
@@ -105,28 +102,6 @@ var Randomer = new Class({
                     },this);
             }
         }
-    },
-    
-    /**
-     * Returns the two points of the segment of the envelope 
-     * that the segment [innerPoint, point] crosses if there is one, 
-     * an empty array is returned if there are no intersection.
-     */
-    crossEnvelope: function crossEnvelope(point) {
-        var innerTopoint = new Vector(this.innerPoint, point);
-        for (var i = 0; i<this.tenvelope.length; i++) {
-            var innerToa = new Vector(this.innerPoint, this.tenvelope[i]);
-            var innerTob = new Vector(this.innerPoint, this.tenvelope[(i+1)%this.tenvelope.length]);
-            var aTob = new Vector(this.tenvelope[i], this.tenvelope[(i+1)%this.tenvelope.length]);
-            var aToinner = new Vector(this.tenvelope[i], this.innerPoint);
-            var aTopoint = new Vector(this.tenvelope[i], point);
-            
-            if (innerTopoint.by(innerToa) * innerTopoint.by(innerTob) <= 0 &&
-                aTob.by(aToinner) * aTob.by(aTopoint) <= 0) {
-                    return [this.tenvelope[i], this.tenvelope[(i+1)%this.tenvelope.length]];
-            }
-        }
-        return [];
     },
     
     addCurrentEnvelopeToLog: function log() {

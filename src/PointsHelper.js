@@ -38,7 +38,7 @@ var PointsHelper = {
 		return this.genericPointFromIn(from,
 									   candidates,
 									   function(currentBest, candidate) {
-									    	return currentBest.by(candidate) < 0;
+											return currentBest.by(candidate) < 0;
 									   });
 	},
 
@@ -72,31 +72,69 @@ var PointsHelper = {
 		
 		return result;
 	},
-    
-
-    sameSideAs: function sameSideAs(refVect, refPoint, points) {
-        var refSign = refVect.by(new Vector(refVect.origin, refPoint));
-        var result = [];
-        points.each (function (point, index) {
-            if(refVect.by(new Vector(refVect.origin, point))*refSign >= 0) {
-                if (!((refVect.origin.x == point.x && refVect.origin.y == point.y) ||
-                    ((refVect.origin.x + refVect.x) == point.x && (refVect.origin.y + refVect.y) == point.y)))
-                result.push(index);
-            }
-        });
-        return result;
-    },
-    
-    oppositeSideTo: function oppositeSideTo(refVect, refPoint, points) {
-        var refSign = refVect.by(new Vector(refVect.origin, refPoint));
-        var result = [];
-        points.each (function (point, index) {
-            if(refVect.by(new Vector(refVect.origin, point))*refSign < 0)
-                result.push(point);
-        });
-        return result;
-    },
-    
+	
+	/**
+ 	* Returns the two points of the segment of the envelope 
+ 	* that the segment [innerPoint, point] crosses if there is one, 
+ 	* an empty array is returned if there are no intersections.
+ 	*/
+	crossEnvelope: function crossEnvelope(polygon, innerPoint, point) {
+		var innerToPoint = new Vector(innerPoint, point);
+		
+		for (var i = 0; i < polygon.length; i++) {
+			var innerToa = new Vector(innerPoint, polygon[i]);
+			var innerTob = new Vector(innerPoint, polygon[(i+1)%polygon.length]);
+			var aTob = new Vector(polygon[i], polygon[(i+1)%polygon.length]);
+			var aToinner = new Vector(polygon[i], innerPoint);
+			var aTopoint = new Vector(polygon[i], point);
+			
+			if (innerToPoint.by(innerToa) * innerToPoint.by(innerTob) <= 0
+				&& aTob.by(aToinner) * aTob.by(aTopoint) <= 0)
+				return [polygon[i], polygon[(i+1)%polygon.length]];
+		}
+		return [];
+	},
+	
+	/**Computes the barycenter of a set of points.
+	*@param	Point[]	points	the points for which the barycenter is to be computed
+	*/
+	barycenter: function barycenter(points) {
+		var result = {x: 0, y: 0};
+		points.each(function(point) {
+			result.x += point.x;
+			result.y += point.y;
+		});
+		
+		return {
+			x: result.x / points.length,
+			y: result.y / points.length
+		};
+	},
+	
+	
+	sameSideAs: function sameSideAs(refVect, refPoint, points) {
+		var refSign = refVect.by(new Vector(refVect.origin, refPoint));
+		var result = [];
+		points.each (function (point, index) {
+			if(refVect.by(new Vector(refVect.origin, point))*refSign >= 0) {
+				if (!((refVect.origin.x == point.x && refVect.origin.y == point.y) ||
+					((refVect.origin.x + refVect.x) == point.x && (refVect.origin.y + refVect.y) == point.y)))
+				result.push(index);
+			}
+		});
+		return result;
+	},
+	
+	oppositeSideTo: function oppositeSideTo(refVect, refPoint, points) {
+		var refSign = refVect.by(new Vector(refVect.origin, refPoint));
+		var result = [];
+		points.each (function (point, index) {
+			if(refVect.by(new Vector(refVect.origin, point))*refSign < 0)
+				result.push(point);
+		});
+		return result;
+	},
+	
    	oppositeSideTo2: function oppositeSideTo2(refVect, refPoint, points) {
 		var refSign = refVect.by(new Vector(refVect.origin, refPoint)); // OPT: define a test function instead of a multiplication
 		
