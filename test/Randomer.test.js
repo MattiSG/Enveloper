@@ -171,7 +171,6 @@ describe('Randomer class', {
                                                 {'x':242, 'y':291},
                                                 {'x':226, 'y':270},
                                                 {'x':302, 'y':280},
-                                                //{'x':268, 'y':294},
                                                 {'x':256, 'y':304}
                                                 ]);
     },
@@ -205,10 +204,6 @@ describe('Randomer class', {
     "Envelope calculation points2" : function() {
         var randomer = new Randomer(points2);
         randomer.envelope();
-        //var newpage=open("",'newpopup','width=400,height=400,toolbar=no,scrollbars=no,resizable=no');
-        //newpage.document.write("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>");
-        //newpage.document.write("<html><head><title>page popup</title></head>");
-        //newpage.document.write("<body>"+randomer.texte+"</body></html>");
         value_of(randomer.tenvelope).should_have(6, "items");
         value_of(randomer.tenvelope).should_include({'x': 226, 'y': 270});
         value_of(randomer.tenvelope).should_include({'x': 242, 'y': 291});
@@ -219,18 +214,12 @@ describe('Randomer class', {
     },
     
     "Envelope calculation hardcore" : function() {
-        //*
         var randomer = new Randomer(hardcore);
         randomer.envelope();
-        //var newpage=open("",'newpopup','width=400,height=400,toolbar=no,scrollbars=no,resizable=no');
-        //newpage.document.write("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>");
-        //newpage.document.write("<html><head><title>page popup</title></head>");
-        //newpage.document.write("<body>"+randomer.texte+"</body></html>");
         value_of(randomer.tenvelope).should_have(3, "items");
         value_of(randomer.tenvelope).should_include({'x': 100, 'y': 100});
         value_of(randomer.tenvelope).should_include({'x': 300, 'y': 300});
         value_of(randomer.tenvelope).should_include({'x': 400, 'y': 300});
-        //*/
     }
 });
 })();

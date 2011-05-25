@@ -8,7 +8,7 @@ var Randomer = new Class({
     points:[],
     tenvelope:[],
     innerPoint: {x:null, y:null},
-    texte: "",
+    logText: "",
     
     initialize: function init(points) {
         this.setInput(points)
@@ -27,31 +27,37 @@ var Randomer = new Class({
     },
     
     computeEnvelope: function computeEnvelope(points) {
-        this.tenvelope.each(function (point, index) { this.texte+=index+" : x = "+point.x+" y = "+point.y+" \n";},this);
-        this.texte+="<br/>";
+        //this.addCurrentEnvelopeToLog();
         newPoint = points.getRandom();
+        
         if (newPoint == null) {
-            //alert(this.texte);
             return this.tenvelope;
         }
+        
+        /**
+         * For the first three points, there are no special treatments.
+         * We just pick them randomly.
+         */
         if (this.tenvelope.length < 3) {
             this.tenvelope.push(newPoint);
         } else {
             /**
              * If no point inside the envelope has been created yet, we create one.
+             * I chose the barycenter of the three first points.
              */
             if (this.innerPoint.x == null) {
-                //TODO: à reprendre en plus joli.
                 this.innerPoint.x = (this.tenvelope[0].x+this.tenvelope[1].x+this.tenvelope[2].x)/3;
                 this.innerPoint.y = (this.tenvelope[0].y+this.tenvelope[1].y+this.tenvelope[2].y)/3;
             }
             
             this.iterate(newPoint);
-            
         }
         this.computeEnvelope(points.erase(newPoint));
     },
     
+    /**
+     * Compute the envelope after the integration of newPoint.
+     */
     iterate: function iterate(newPoint) {
         /**
          * Check wether the newPoint is inside the envelope or not, if it is not
@@ -66,16 +72,15 @@ var Randomer = new Class({
             if(refVect.by(new Vector(this.tenvelope[lowerAttach], newPoint))!=0) {
                 toRemove = PointsHelper.sameSideAs(refVect, newPoint, this.tenvelope);
             }
-            /**
-             * If there's nothing to remove, we just add the new point 
-             * between the upper and the lower attach points int the 
-             * envelope.
-             */
+
             var min = (lowerAttach<upperAttach)? lowerAttach : upperAttach;
             var max = lowerAttach+upperAttach-min;
             
-            
-            
+            /**
+             * If there's nothing to remove, we just add the new point 
+             * between the upper and the lower attach points in the 
+             * envelope.
+             */            
             if (toRemove.length == 0) {
                 var newEnvelope = [];
                 if (min == 0 && max == this.tenvelope.length-1) {
@@ -86,62 +91,25 @@ var Randomer = new Class({
                     this.tenvelope = before.concat(newPoint, this.tenvelope);
                 }
             } 
+            
             /**
              * Else we just add the point in place of one of the points
              * we have to remove and we remove all the other points to
              * remove from the envelope.
              */
             else {
-                /*
-                if (min < toRemove[0] && max > toRemove[0]) {
-                    min++;
-                    this.tenvelope[min] = newPoint;
-                    min++;
-                    max--;
-                    if (min <= max)
-                        this.tenvelope.splice(min, max-min+1);
-                } else {
-                    if (min == 0) {
-                        this.tenvelope[this.tenvelope.length-1] = newPoint;
-                        min = max;
-                        max = this.tenvelope.length-1;
-                    } else {
-                        min--;
-                        this.tenvelope[min] = newPoint;
-                        //if (min == 0) {
-                        //    min = this.tenvelope.length-1;
-                        //} else {
-                        //    min--;
-                        //}
-                        
-                        //if (max == this.tenvelope.length-1) {
-                        //    max = 0;
-                        //} else {
-                        //    max++;
-                        //}
-                    }
-                    if (max >= min && max != min)
-                        this.tenvelope = this.tenvelope.splice(min, max-min+1);
-                    else if (max != min)   
-                        this.tenvelope.splice(min, 1);
-                }
-            
-                //*/
-                //*
                 this.tenvelope[toRemove[0]] = newPoint;
                 toRemove.splice(0,1);
                 toRemove.sort().reverse().each(
                     function(pointIndex) {
                         this.tenvelope.splice(pointIndex,1);
                     },this);
-                //*/
             }
-            //this.envelope.push(newPoint);
         }
     },
     
     /**
-     * Return the two points of the segment of the envelope 
+     * Returns the two points of the segment of the envelope 
      * that the segment [innerPoint, point] crosses if there is one, 
      * an empty array is returned if there are no intersection.
      */
@@ -160,5 +128,10 @@ var Randomer = new Class({
             }
         }
         return [];
+    },
+    
+    addCurrentEnvelopeToLog: function log() {
+        this.tenvelope.each(function (point, index) { this.logText+=index+" : x = "+point.x+" y = "+point.y+" \n";},this);
+        this.logText+="<br/>";
     }
 });
