@@ -61,8 +61,11 @@ var Randomer = new Class({
         if (segmentCrossed.length != 0) {
             var lowerAttach = PointsHelper.lowestPointFromIn(newPoint, this.tenvelope);
             var upperAttach = PointsHelper.highestPointFromIn(newPoint, this.tenvelope);
-            var toRemove = PointsHelper.sameSideAs(new Vector(this.tenvelope[lowerAttach], this.tenvelope[upperAttach]), newPoint, this.tenvelope);
-            
+            var toRemove = [];
+            var refVect = new Vector(this.tenvelope[lowerAttach], this.tenvelope[upperAttach]);
+            if(refVect.by(new Vector(this.tenvelope[lowerAttach], newPoint))!=0) {
+                toRemove = PointsHelper.sameSideAs(refVect, newPoint, this.tenvelope);
+            }
             /**
              * If there's nothing to remove, we just add the new point 
              * between the upper and the lower attach points int the 
@@ -70,6 +73,9 @@ var Randomer = new Class({
              */
             var min = (lowerAttach<upperAttach)? lowerAttach : upperAttach;
             var max = lowerAttach+upperAttach-min;
+            
+            
+            
             if (toRemove.length == 0) {
                 var newEnvelope = [];
                 if (min == 0 && max == this.tenvelope.length-1) {
@@ -86,7 +92,7 @@ var Randomer = new Class({
              * remove from the envelope.
              */
             else {
-                //*
+                /*
                 if (min < toRemove[0] && max > toRemove[0]) {
                     min++;
                     this.tenvelope[min] = newPoint;
@@ -121,10 +127,10 @@ var Randomer = new Class({
                 }
             
                 //*/
-                /*
+                //*
                 this.tenvelope[toRemove[0]] = newPoint;
                 toRemove.splice(0,1);
-                toRemove.each(
+                toRemove.sort().reverse().each(
                     function(pointIndex) {
                         this.tenvelope.splice(pointIndex,1);
                     },this);
