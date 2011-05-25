@@ -5,7 +5,6 @@
  */
 
 var Randomer = new Class({
-    points:[],
     tenvelope:[],
     innerPoint: {x:null, y:null},
     logText: "",
@@ -15,7 +14,7 @@ var Randomer = new Class({
     },
     
     setInput : function setInput(points) {
-        this.points = points.clone();
+    	this.points = points.clone();
         this.tenvelope = [];
 		this.innerPoint = {x:null, y:null};
     },
@@ -135,3 +134,6 @@ var Randomer = new Class({
         this.logText+="<br/>";
     }
 });
+
+
+AvailableRenderers.register('Randomized', Randomer, 'green');
