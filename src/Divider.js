@@ -235,3 +235,6 @@ var Divider = new Class({
 		this.blocks.pop(); // we've removed the right-handside block
 	}
 });
+
+
+AvailableRenderers.register('Divide & Conquer', Divider, 'blue');
