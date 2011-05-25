@@ -2,7 +2,7 @@
 *Authors: Romaric Pighetti, Matti Schneider-Ghibaudo
 */
 
-var Divider = new Class({
+var DividerOpti = new Class({
 	/**Contains all points that are still to be worked on.
 	*That means, this array will be modified when computing envelopes, and you should never access it from the outside!
 	*
@@ -68,8 +68,8 @@ var Divider = new Class({
 	},
 	
 	patchBlocksAt: function patchBlocksAt(index) {
-		var leftBlock = this.getBlock(index);
-		var rightBlock = this.getBlock(index + 1);
+		var leftBlock = this.getBlock(index); //PointsHelper.sortBy('x', this.getBlock(index));
+		var rightBlock = this.getBlock(index + 1); //PointsHelper.sortBy('x', this.getBlock(index + 1));
 				
 		var bounds = {
 			left: {
