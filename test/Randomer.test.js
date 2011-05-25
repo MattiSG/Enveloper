@@ -3,7 +3,7 @@
  */
 (function() {
     
-var points, points2, hardcore;
+var points, points2, alligne;
     
 describe('Randomer class', {
     before: function() {
@@ -29,7 +29,7 @@ describe('Randomer class', {
             {'x':242,'y':291}
         ];
         
-        hardcore = [
+        alligne = [
             {'x':100,'y':100},
             {'x':150,'y':150},
             {'x':200,'y':200},
@@ -213,8 +213,8 @@ describe('Randomer class', {
         value_of(randomer.tenvelope).should_include({'x': 277, 'y': 275});
     },
     
-    "Envelope calculation hardcore" : function() {
-        var randomer = new Randomer(hardcore);
+    "Envelope calculation alligne" : function() {
+        var randomer = new Randomer(alligne);
         randomer.envelope();
         value_of(randomer.tenvelope).should_have(3, "items");
         value_of(randomer.tenvelope).should_include({'x': 100, 'y': 100});

@@ -136,7 +136,7 @@ var PointsHelper = {
 	},
 	
    	oppositeSideTo2: function oppositeSideTo2(refVect, refPoint, points) {
-		var refSign = refVect.by(new Vector(refVect.origin, refPoint)); // OPT: define a test function instead of a multiplication
+		var refSign = refVect.by(new Vector(refVect.origin, refPoint)); 
 		
 		var products = {};
 		
@@ -162,5 +162,4 @@ var PointsHelper = {
 		result.splice(0, result.length - positiveIndex);
 		return result;
 	},
-
 }
