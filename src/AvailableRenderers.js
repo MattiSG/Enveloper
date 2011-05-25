@@ -13,4 +13,12 @@ var AvailableRenderers = { // used to generate GUI
 			color: color || 'black'
 		});
 	},
+	
+	getAll: function getAll() {
+		return this.registered;
+	},
+	
+	each: function forEachRenderer(func) {
+		Object.each(this.registered, func);
+	}
 }
