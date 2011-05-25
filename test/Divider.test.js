@@ -28,10 +28,7 @@ describe('Divider class', {
 			{'x': 525, 'y':257}
 		];
 	},
-	
-	"Sorting": function() {
-		value_of(subject.sortByAbscissa(points)).should_be(sortedPoints);
-	},
+
 	
 	"Blocks calculation": function() {
 		value_of(subject.initBlocks(points)).should_be([points.slice(0, 3), points.slice(3, 5)]);

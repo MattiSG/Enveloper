@@ -1,6 +1,6 @@
 (function() {
     
-    var origin, sortedPoints, highestRelativeToOrigin, highest, rightPoints, leftPoints, points;
+    var origin, pointsToSort, sortedPoints, verticallySortedPoints, highestRelativeToOrigin, highest, rightPoints, leftPoints, points;
     
 describe('PointsHelper', {
     
@@ -26,6 +26,15 @@ describe('PointsHelper', {
         highest = {'x': 259, 'y':445};
         highestRelativeToOrigin = {'x': 29, 'y':119};
         
+        
+        pointsToSort =  [
+			highest, // 0
+			{'x': 105, 'y':65},
+			{'x': 525, 'y':257},
+			{'x': 257, 'y':322}, // 3
+			highestRelativeToOrigin // 4
+		];
+        
         sortedPoints = 	[
 			highestRelativeToOrigin,
 			{'x': 105, 'y':65},
@@ -33,7 +42,24 @@ describe('PointsHelper', {
 			highest,
 			{'x': 525, 'y':257}
 		];
+		
+       verticallySortedPoints = [
+			{'x': 105, 'y':65},
+			highestRelativeToOrigin,
+			{'x': 525, 'y':257},
+			{'x': 257, 'y':322},
+			highest
+		];
     },
+    
+    	
+	"Sorting by abscissa": function() {
+		value_of(PointsHelper.sortBy('x', pointsToSort)).should_be(sortedPoints);
+	},
+	
+	"Sorting by ordinate": function() {
+		value_of(PointsHelper.sortBy('y', pointsToSort)).should_be(verticallySortedPoints);
+	},
     
     "Highest point calculation": function() {
 		value_of(PointsHelper.highestPointFromIn(origin, sortedPoints)).should_be(sortedPoints.indexOf(highestRelativeToOrigin));
@@ -73,7 +99,6 @@ describe('PointsHelper', {
 	},
     
     "Same side calculation" : function () {
-        
         value_of(PointsHelper.sameSideAs(
             new Vector(origin, {x: 0, y: 1}), 
             points[5], 

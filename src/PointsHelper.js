@@ -1,4 +1,21 @@
-var PointsHelper = {	
+var PointsHelper = {
+	
+	/**
+	*@param	String	direction	one of "x" (sort by abscissa) or "y" (sort by ordinate)
+	*@param	Point[]	points	the array of points to sort
+	*@returns	Point[]	a sorted copy of the given points array
+	*/
+	sortBy: function sort(direction, points) {
+		return points.sort(function(first, second) {
+			if (first[direction] > second[direction])
+				return 1;
+			if (first[direction] < second[direction])
+				return -1
+				
+			return 0;
+		});
+	},
+
 	/**
 	*@param	Point	from	the point from which the highest point is to be seen
 	*@param	Point[]	candidates	the *ordered* set of points in which to look for the highest point
@@ -79,4 +96,33 @@ var PointsHelper = {
         });
         return result;
     },
+    
+   	oppositeSideTo2: function oppositeSideTo2(refVect, refPoint, points) {
+		var refSign = refVect.by(new Vector(refVect.origin, refPoint)); // OPT: define a test function instead of a multiplication
+		
+		var products = {};
+		
+		points.each(function(point) {
+			products[point] = refVect.by(new Vector(refVect.origin, point));
+		});
+
+		var result = points.sort(function(first, second) {
+			if (products[first] < products[second])
+				return -1;
+			
+			if (products[first] == products[second])
+				return 0;
+				
+			return 1;
+		});
+		
+		var positiveIndex;
+		for (positiveIndex = 0; positiveIndex < result.length; positiveIndex++)
+			if (result[positiveIndex] > 0)
+				break;
+		
+		result.splice(0, result.length - positiveIndex);
+		return result;
+	},
+
 }

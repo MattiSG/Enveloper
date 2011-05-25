@@ -23,20 +23,8 @@ var Divider = new Class({
 	},
 	
 	setInput: function setInput(points) {
-		this.points = this.sortByAbscissa(points.clone());
+		this.points = PointsHelper.sortBy('x', points.clone());
 		this.blocks = this.initBlocks(this.points);
-	},
-	
-	sortByAbscissa: function sort(points) {
-		return points.sort(function(first, second) {
-			if (first.x == second.x)
-				return 0;
-				
-			if (first.x > second.x)
-				return 1;
-				
-			return -1;
-		});
 	},
 	
 	initBlocks: function initBlocks(points) {
@@ -63,8 +51,15 @@ var Divider = new Class({
 	envelope: function envelope() {
 		if (this.blocks.length > 1) // caching
 			this.computeEnvelope();
-
-		return this.getBlock(0);
+		
+		var result = [];
+		var points = this.getBlock(0); // that's our ordered-by-abscissa envelope
+		points.each(function(point) { // we need to order it clockwise
+			if (point.y > points[0].y)
+				result.push(point);
+			else result.splice(0, 0, point); // that's a push_back
+		});
+		return result;
 	},
 	
 	computeEnvelope: function computeEnvelope() {
@@ -73,8 +68,8 @@ var Divider = new Class({
 	},
 	
 	patchBlocksAt: function patchBlocksAt(index) {
-		var leftBlock = this.sortByAbscissa(this.getBlock(index));
-		var rightBlock = this.sortByAbscissa(this.getBlock(index + 1));
+		var leftBlock = PointsHelper.sortBy('x', this.getBlock(index));
+		var rightBlock = PointsHelper.sortBy('x', this.getBlock(index + 1));
 				
 		var bounds = {
 			left: {
@@ -111,23 +106,23 @@ var Divider = new Class({
 		
 		var result = [];
 		
-		result.push(rightBlock[bounds.right.bottom],
-					leftBlock[bounds.left.bottom]);
-		
 		result.combine(PointsHelper.oppositeSideTo(
-												new Vector(leftBlock[bounds.left.top], leftBlock[bounds.left.bottom]),
-												rightBlock[0], // ordered by ascissa
-												leftBlock
-											   ));
+							new Vector(leftBlock[bounds.left.top], leftBlock[bounds.left.bottom]),
+							rightBlock[0], // ordered by ascissa
+							leftBlock)
+						);
 											   
 		result.push(leftBlock[bounds.left.top],
 					rightBlock[bounds.right.top]);
 											   
 		result.combine(PointsHelper.oppositeSideTo(
-												new Vector(rightBlock[bounds.right.top], rightBlock[bounds.right.bottom]),
-												leftBlock[0], // ordered by ascissa
-												rightBlock
-											   ));
+							new Vector(rightBlock[bounds.right.top], rightBlock[bounds.right.bottom]),
+							leftBlock[0], // ordered by ascissa
+							rightBlock)
+						);
+												
+		result.push(rightBlock[bounds.right.bottom],
+					leftBlock[bounds.left.bottom]);
 		
 		this.blocks[index] = result;
 		this.blocks.splice(index + 1, 1);
